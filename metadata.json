@@ -1,0 +1,8 @@
+{
+  "name": "Dirsha",
+  "description": "Dirsha is a revolutionary marketplace where demand is transformed into investable bonds or smart contracts. This platform empowers farmers and service providers by allowing them to secure funding for production upfront. They can buy these contracts, deliver the specified goods or services at a pre-agreed price, ensuring transparency and efficiency.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "prompt": ""
+}
