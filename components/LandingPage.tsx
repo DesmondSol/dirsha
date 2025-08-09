@@ -11,27 +11,80 @@ interface LandingPageProps {
   onNavigateToPricing: () => void;
 }
 
-const Header: React.FC<Omit<LandingPageProps, 'onNavigateToMarketplace'> & { onNavigateToMarketplace: () => void; onShowComingSoon: (feature: string) => void }> = ({ onNavigateToMarketplace, onNavigateToPredictions, onNavigateToContact, onNavigateToPricing, onShowComingSoon }) => (
+// --- ICONS ---
+const HamburgerIcon = () => <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-16 6h16" /></svg>;
+const CloseIcon = () => <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
+
+
+const Header: React.FC<Omit<LandingPageProps, 'onNavigateToMarketplace'> & { onNavigateToMarketplace: () => void; onShowComingSoon: (feature: string) => void; onMenuToggle: () => void; }> = ({ onNavigateToMarketplace, onNavigateToPredictions, onNavigateToContact, onNavigateToPricing, onShowComingSoon, onMenuToggle }) => (
   <header className="fixed top-0 left-0 right-0 bg-gray-900 bg-opacity-80 backdrop-blur-md z-50">
     <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
       <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-green-400 text-transparent bg-clip-text">
         Dirsha
       </h1>
-      <div className="hidden md:flex items-center space-x-8">
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex items-center space-x-6">
         <button onClick={onNavigateToPredictions} className="text-gray-300 hover:text-white transition">Predictions</button>
         <button onClick={onNavigateToContact} className="text-gray-300 hover:text-white transition">Contact Us</button>
         <button onClick={onNavigateToPricing} className="text-gray-300 hover:text-white transition">Pricing</button>
         <button onClick={() => onShowComingSoon('Language Selection')} className="text-gray-300 hover:text-white transition">Language</button>
+        <button
+          onClick={onNavigateToMarketplace}
+          className="ml-4 px-6 py-2 font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-full hover:scale-105 transform transition-transform duration-300"
+        >
+          Marketplace
+        </button>
       </div>
-      <button
-        onClick={onNavigateToMarketplace}
-        className="px-6 py-2 font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-full hover:scale-105 transform transition-transform duration-300"
-      >
-        Marketplace
-      </button>
+       {/* Mobile Menu Button */}
+      <div className="md:hidden">
+        <button onClick={onMenuToggle} className="text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+          <HamburgerIcon />
+        </button>
+      </div>
     </nav>
   </header>
 );
+
+interface MobileMenuProps extends LandingPageProps {
+  onClose: () => void;
+  onShowComingSoon: (feature: string) => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ onNavigateToMarketplace, onNavigateToPredictions, onNavigateToContact, onNavigateToPricing, onClose, onShowComingSoon }) => {
+    
+    const handleNavClick = (navFunction: () => void) => {
+        navFunction();
+        onClose();
+    };
+
+    const handleComingSoonClick = (feature: string) => {
+        onShowComingSoon(feature);
+        onClose();
+    };
+    
+    return (
+        <div className="fixed inset-0 z-[100] bg-gray-900/95 backdrop-blur-sm flex flex-col items-center justify-center">
+            <button onClick={onClose} className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white">
+                <CloseIcon />
+            </button>
+            <nav className="flex flex-col items-center space-y-6 text-xl">
+                <button onClick={() => handleNavClick(onNavigateToPredictions)} className="text-gray-300 hover:text-white transition">Predictions</button>
+                <button onClick={() => handleNavClick(onNavigateToContact)} className="text-gray-300 hover:text-white transition">Contact Us</button>
+                <button onClick={() => handleNavClick(onNavigateToPricing)} className="text-gray-300 hover:text-white transition">Pricing</button>
+                <button onClick={() => handleComingSoonClick('Language Selection')} className="text-gray-300 hover:text-white transition">Language</button>
+                <div className="pt-8">
+                     <button
+                        onClick={() => handleNavClick(onNavigateToMarketplace)}
+                        className="px-8 py-3 text-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-full hover:scale-105 transform transition-transform duration-300"
+                    >
+                        Enter Marketplace
+                    </button>
+                </div>
+            </nav>
+        </div>
+    );
+};
+
 
 const chartColors = {
     purple: '#a855f7',
@@ -151,6 +204,7 @@ const revenueModelChartConfig: ChartConfiguration = {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMarketplace, onNavigateToPredictions, onNavigateToContact, onNavigateToPricing }) => {
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="bg-gray-900">
@@ -160,7 +214,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMarketplace, onNa
         onNavigateToContact={onNavigateToContact}
         onNavigateToPricing={onNavigateToPricing}
         onShowComingSoon={setComingSoonFeature}
+        onMenuToggle={() => setIsMenuOpen(true)}
       />
+
+      {isMenuOpen && (
+        <MobileMenu
+            onNavigateToMarketplace={onNavigateToMarketplace}
+            onNavigateToPredictions={onNavigateToPredictions}
+            onNavigateToContact={onNavigateToContact}
+            onNavigateToPricing={onNavigateToPricing}
+            onClose={() => setIsMenuOpen(false)}
+            onShowComingSoon={(feature) => {
+                setComingSoonFeature(feature);
+                setIsMenuOpen(false);
+            }}
+        />
+      )}
       
       <div
         className="text-white text-center py-48 px-4 bg-gray-800 bg-blend-multiply"
