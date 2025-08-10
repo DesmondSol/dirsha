@@ -9,6 +9,15 @@ export const translations = {
     button_got_it: 'Got it',
     value_label: 'Value',
 
+    // Mobile App Promo Section
+    mobile_app_title: "Empower Your Farming with the Dirsha App",
+    mobile_app_subtitle: "Get real-time market news, connect with buyers via voice chat, and access exclusive AI insights—all from your phone.",
+    mobile_app_cta: "Launch Farmer's App",
+    mobile_app_feature_1: "Voice Chat",
+    mobile_app_feature_2: "Market News",
+    mobile_app_feature_3: "AI Insights",
+    mobile_app_connect_with: "Connect with",
+
     // Header & Navigation
     header_predictions: 'Predictions',
     header_contact: 'Contact Us',
@@ -338,6 +347,15 @@ export const translations = {
     button_close: 'ዝጋ',
     button_got_it: 'ገባኝ',
     value_label: 'ዋጋ',
+
+    // Mobile App Promo Section
+    mobile_app_title: "ግብርናዎን በድርሻ መተግበሪያ ያጠናክሩ",
+    mobile_app_subtitle: "የቀጥታ የገበያ ዜናዎችን ያግኙ፣ ከገዢዎች ጋር በድምጽ ይወያዩ፣ እና ልዩ የ AI ግንዛቤዎችን ከስልክዎ ያግኙ።",
+    mobile_app_cta: "የገበሬውን መተግበሪያ ይክፈቱ",
+    mobile_app_feature_1: "የድምጽ ውይይት",
+    mobile_app_feature_2: "የገበያ ዜና",
+    mobile_app_feature_3: "የ AI ግንዛቤዎች",
+    mobile_app_connect_with: "ከ... ጋር ይገናኙ",
 
     // Header & Navigation
     header_predictions: 'ትንበያዎች',
