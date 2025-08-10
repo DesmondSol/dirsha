@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import ContactFormModal from './ContactFormModal';
+import { useLanguage } from './LanguageContext';
 
 interface ContactUsPageProps {
   onNavigateToLanding: () => void;
@@ -13,48 +14,49 @@ const LocationIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" he
 
 const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigateToLanding }) => {
     const [isFormOpen, setFormOpen] = useState(false);
+    const { t } = useLanguage();
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
             <header className="bg-gray-800/80 backdrop-blur-md">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <h1 onClick={onNavigateToLanding} className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-green-400 text-transparent bg-clip-text cursor-pointer">
-                        Dirsha
+                        {t('app_title')}
                     </h1>
                     <button
                         onClick={onNavigateToLanding}
                         className="text-gray-300 hover:text-white transition"
                     >
-                        Back to Home
+                        {t('button_back_home')}
                     </button>
                 </nav>
             </header>
             
             <main className="container mx-auto px-6 py-16">
                 <div className="text-center">
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-white">Get In Touch</h2>
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-white">{t('contact_title')}</h2>
                     <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
-                        We're here to help and answer any question you might have. We look forward to hearing from you.
+                        {t('contact_subtitle')}
                     </p>
                 </div>
 
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     <InfoCard 
                         icon={<MailIcon />} 
-                        title="Email Us"
+                        title={t('contact_email_us')}
                         content="soltig66@gmail.com"
                         link="mailto:soltig66@gmail.com"
                     />
                     <InfoCard 
                         icon={<PhoneIcon />}
-                        title="Call Us"
+                        title={t('contact_call_us')}
                         content="0923214663"
                         link="tel:0923214663"
                     />
                      <InfoCard 
                         icon={<LocationIcon />}
-                        title="Our Location"
-                        content="Addis Ababa, Ethiopia"
+                        title={t('contact_our_location')}
+                        content={t('contact_location_address')}
                     />
                 </div>
 
@@ -63,13 +65,13 @@ const ContactUsPage: React.FC<ContactUsPageProps> = ({ onNavigateToLanding }) =>
                         onClick={() => setFormOpen(true)}
                         className="px-8 py-4 font-bold text-lg text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-lg hover:scale-105 transform transition-transform duration-300 shadow-lg shadow-purple-500/20"
                     >
-                        Send an Inquiry
+                        {t('contact_send_inquiry')}
                     </button>
                 </div>
             </main>
 
              <footer className="text-center p-6 bg-gray-800 text-gray-400 text-sm mt-16">
-                <p>&copy; 2025 Dirsha. All Rights Reserved.</p>
+                <p>{t('footer_text')}</p>
             </footer>
 
             {isFormOpen && <ContactFormModal onClose={() => setFormOpen(false)} />}

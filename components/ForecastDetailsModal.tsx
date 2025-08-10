@@ -1,5 +1,7 @@
+
 import React from 'react';
 import type { CommodityPrediction } from '../types';
+import { useLanguage } from './LanguageContext';
 
 interface ForecastDetailsModalProps {
   commodity: CommodityPrediction;
@@ -43,12 +45,13 @@ const InteractiveChart = ({ data, height = 320 }) => {
 
 
 const ForecastDetailsModal: React.FC<ForecastDetailsModalProps> = ({ commodity, onClose }) => {
+  const { t } = useLanguage();
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center p-4" onClick={onClose}>
       <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-purple-500/50" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-5 border-b border-gray-700">
           <h2 className="text-2xl font-bold text-white">
-            Forecast Details: <span className="bg-gradient-to-r from-green-400 to-purple-400 text-transparent bg-clip-text">{commodity.name}</span>
+            {t('forecast_details_title')}: <span className="bg-gradient-to-r from-green-400 to-purple-400 text-transparent bg-clip-text">{t(commodity.nameKey)}</span>
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <CloseIcon />
@@ -61,18 +64,18 @@ const ForecastDetailsModal: React.FC<ForecastDetailsModalProps> = ({ commodity, 
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2 bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-                    <h3 className="font-bold text-lg text-purple-400 mb-2">AI Forecast Analysis</h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">{commodity.forecastDetails}</p>
+                    <h3 className="font-bold text-lg text-purple-400 mb-2">{t('forecast_analysis_title')}</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed">{t(commodity.forecastDetailsKey)}</p>
                 </div>
                  <div className="md:col-span-1 bg-gray-800/50 p-4 rounded-lg border border-gray-700 flex flex-col justify-center items-center">
-                    <h3 className="font-bold text-lg text-green-400 mb-2">Trading Volume</h3>
+                    <h3 className="font-bold text-lg text-green-400 mb-2">{t('trading_volume_title')}</h3>
                     <p className="text-3xl font-mono text-white">{commodity.volume.toLocaleString()}</p>
-                    <p className="text-sm text-gray-400">{commodity.unit.startsWith('USD') ? 'lbs' : 'quintals'}</p>
+                    <p className="text-sm text-gray-400">{t(commodity.unit.startsWith('USD') ? 'lbs' : 'quintals')}</p>
                 </div>
             </div>
         </div>
         <div className="mt-auto p-4 border-t border-gray-700 flex justify-end">
-          <button onClick={onClose} className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Close</button>
+          <button onClick={onClose} className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">{t('button_close')}</button>
         </div>
       </div>
     </div>

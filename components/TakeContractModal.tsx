@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import type { Bond, Contract } from '../types';
+import { useLanguage } from './LanguageContext';
+
 
 interface TakeContractModalProps {
   bond: Bond;
@@ -13,6 +15,7 @@ const UploadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" heig
 
 
 const TakeContractModal: React.FC<TakeContractModalProps> = ({ bond, onClose, onFinalize }) => {
+  const { t } = useLanguage();
   const [takerInfo, setTakerInfo] = useState({
     name: '',
     contact: '',
@@ -35,11 +38,11 @@ const TakeContractModal: React.FC<TakeContractModalProps> = ({ bond, onClose, on
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-        alert("You must agree to all terms to finalize the contract.");
+        alert(t('error_agree_to_finalize'));
         return;
     }
     if (!takerInfo.idPhoto) {
-        alert("Please upload an ID photo.");
+        alert(t('error_upload_id'));
         return;
     }
     onFinalize(bond, takerInfo);
@@ -49,35 +52,35 @@ const TakeContractModal: React.FC<TakeContractModalProps> = ({ bond, onClose, on
     <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center p-4">
       <div className="bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col border border-purple-500/50">
         <div className="flex justify-between items-center p-5 border-b border-gray-700">
-          <h2 className="text-2xl font-bold text-white">Finalize Contract</h2>
+          <h2 className="text-2xl font-bold text-white">{t('finalize_contract_title')}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <CloseIcon />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4">
-            <p className="text-gray-300 mb-4">You are about to take the contract for: <strong className="text-white">{bond.title}</strong>. Please provide your details to proceed.</p>
+            <p className="text-gray-300 mb-4">{t('finalize_contract_prompt')} <strong className="text-white">{t(bond.titleKey)}</strong>. {t('finalize_contract_prompt_2')}</p>
             
-            <InputField label="Full Name" name="name" value={takerInfo.name} onChange={handleChange} placeholder="John Doe" required />
-            <InputField label="Contact Information (Phone or Email)" name="contact" value={takerInfo.contact} onChange={handleChange} placeholder="john.doe@example.com" required />
-            <InputField label="Bank Details (for payment)" name="bankDetails" value={takerInfo.bankDetails} onChange={handleChange} placeholder="Bank Name, Account Number" required />
+            <InputField label={t('form_full_name')} name="name" value={takerInfo.name} onChange={handleChange} placeholder={t('form_full_name_placeholder')} required />
+            <InputField label={t('form_contact_info')} name="contact" value={takerInfo.contact} onChange={handleChange} placeholder={t('form_contact_info_placeholder')} required />
+            <InputField label={t('form_bank_details')} name="bankDetails" value={takerInfo.bankDetails} onChange={handleChange} placeholder={t('form_bank_details_placeholder')} required />
 
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Upload ID Photo</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">{t('form_upload_id')}</label>
                 <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-600 px-6 py-10">
                     <div className="text-center">
                         {takerInfo.idPhoto ? (
-                             <p className="text-green-400">{takerInfo.idPhoto.name} uploaded successfully.</p>
+                             <p className="text-green-400">{takerInfo.idPhoto.name} {t('upload_success')}</p>
                         ) : (
                             <>
                                 <UploadIcon />
                                 <div className="mt-4 flex text-sm leading-6 text-gray-400">
                                     <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-gray-800 font-semibold text-purple-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 hover:text-purple-500">
-                                        <span>Upload a file</span>
+                                        <span>{t('upload_a_file')}</span>
                                         <input id="file-upload" name="idPhoto" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" capture="environment" required/>
                                     </label>
-                                    <p className="pl-1">or drag and drop</p>
+                                    <p className="pl-1">{t('upload_drag_drop')}</p>
                                 </div>
-                                <p className="text-xs leading-5 text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                                <p className="text-xs leading-5 text-gray-400">{t('upload_types')}</p>
                             </>
                         )}
                     </div>
@@ -86,12 +89,12 @@ const TakeContractModal: React.FC<TakeContractModalProps> = ({ bond, onClose, on
 
             <div className="flex items-start">
                 <input id="final-terms" type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-600 mt-1" />
-                <label htmlFor="final-terms" className="ml-3 block text-sm text-gray-300">By checking this box, you confirm your details are correct and agree to all terms and conditions of this contract, understanding they are legally binding.</label>
+                <label htmlFor="final-terms" className="ml-3 block text-sm text-gray-300">{t('finalize_terms_agreement')}</label>
             </div>
             
             <div className="pt-4 flex justify-end gap-4">
-                <button type="button" onClick={onClose} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition">Cancel</button>
-                <button type="submit" disabled={!agreed} className="px-6 py-2 font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transform transition-transform duration-300">Agree & Finalize</button>
+                <button type="button" onClick={onClose} className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition">{t('button_cancel')}</button>
+                <button type="submit" disabled={!agreed} className="px-6 py-2 font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transform transition-transform duration-300">{t('button_agree_finalize')}</button>
             </div>
         </form>
       </div>

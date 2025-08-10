@@ -4,6 +4,7 @@ import type { Bond, Contract } from '../types';
 import CreateBondModal from './CreateBondModal';
 import BondDetailsModal from './BondDetailsModal';
 import TakeContractModal from './TakeContractModal';
+import { useLanguage } from './LanguageContext';
 
 // Icons
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>;
@@ -19,7 +20,7 @@ interface MarketplaceProps {
   bonds: Bond[];
   myContracts: Contract[];
   history: Contract[];
-  onCreateBond: (bondData: Omit<Bond, 'id' | 'creator'>) => void;
+  onCreateBond: (bondData: Omit<Bond, 'id' | 'creator'| 'titleKey' | 'descriptionKey' | 'requirementsKey'> & {title: string, description: string, requirements: string}) => void;
   onTakeContract: (bond: Bond, takerInfo: Contract['taker']) => void;
   onContractAction: (contractId: string, action: 'finished' | 'failed' | 'disputed') => void;
 }
@@ -29,6 +30,7 @@ type ActiveSection = 'bonds' | 'my-contracts' | 'history';
 const Marketplace: React.FC<MarketplaceProps> = ({ onNavigateToLanding, bonds, myContracts, history, onCreateBond, onTakeContract, onContractAction }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<ActiveSection>('bonds');
+  const { t } = useLanguage();
 
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [selectedBondForDetails, setSelectedBondForDetails] = useState<Bond | null>(null);
@@ -62,9 +64,9 @@ const Marketplace: React.FC<MarketplaceProps> = ({ onNavigateToLanding, bonds, m
   };
 
   const navItems = [
-      { id: 'bonds', label: 'Bonds Marketplace', icon: <BondsIcon /> },
-      { id: 'my-contracts', label: 'My Contracts', icon: <ContractsIcon /> },
-      { id: 'history', label: 'History', icon: <HistoryIcon /> },
+      { id: 'bonds', label: t('marketplace_bonds_title'), icon: <BondsIcon /> },
+      { id: 'my-contracts', label: t('marketplace_contracts_title'), icon: <ContractsIcon /> },
+      { id: 'history', label: t('marketplace_history_title'), icon: <HistoryIcon /> },
   ];
 
   return (
@@ -73,7 +75,7 @@ const Marketplace: React.FC<MarketplaceProps> = ({ onNavigateToLanding, bonds, m
       <div className={`fixed inset-y-0 right-0 z-40 w-64 bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'} md:relative md:translate-x-0 md:flex md:flex-col`}>
         <div className="flex items-center justify-between md:justify-center p-4 border-b border-gray-700">
           <h1 onClick={onNavigateToLanding} className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-green-400 text-transparent bg-clip-text cursor-pointer">
-            Dirsha
+            {t('app_title')}
           </h1>
            <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
             <CloseIcon />
@@ -122,22 +124,23 @@ const Marketplace: React.FC<MarketplaceProps> = ({ onNavigateToLanding, bonds, m
 
 const BondsList: React.FC<{ bonds: Bond[], onOpenCreate: () => void, onSelectBond: (bond: Bond) => void }> = ({ bonds, onOpenCreate, onSelectBond }) => {
     const popularTags = ['Avocado', 'Maize', 'Dairy', 'Organic', 'Export', 'Local'];
+    const { t } = useLanguage();
     return (
         <div>
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-3xl font-bold text-white">Bonds Marketplace</h2>
+                <h2 className="text-3xl font-bold text-white">{t('marketplace_bonds_title')}</h2>
                 <button onClick={onOpenCreate} className="w-full md:w-auto px-6 py-3 font-semibold text-white bg-gradient-to-r from-purple-500 to-green-500 rounded-lg hover:scale-105 transform transition-transform duration-300 flex items-center justify-center gap-2">
-                    <span>+</span> Create a Bond
+                    <span>+</span> {t('create_bond_button')}
                 </button>
             </div>
             <div className="relative mb-6">
-                <input type="text" placeholder="Search for bonds (e.g., 'organic coffee')" className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+                <input type="text" placeholder={t('search_bonds_placeholder')} className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"/>
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
                     <SearchIcon />
                 </div>
             </div>
             <div className="mb-6 flex flex-wrap gap-2">
-                {popularTags.map(tag => <button key={tag} className="px-4 py-1 bg-gray-700 text-gray-300 rounded-full text-sm hover:bg-gray-600 transition">{tag}</button>)}
+                {popularTags.map(tag => <button key={tag} className="px-4 py-1 bg-gray-700 text-gray-300 rounded-full text-sm hover:bg-gray-600 transition">{t(tag.toLowerCase())}</button>)}
             </div>
             <div className="border-t border-gray-700 my-4"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -147,68 +150,78 @@ const BondsList: React.FC<{ bonds: Bond[], onOpenCreate: () => void, onSelectBon
     );
 };
 
-const BondCard: React.FC<{ bond: Bond, onSelect: (bond: Bond) => void }> = ({ bond, onSelect }) => (
-  <div onClick={() => onSelect(bond)} className="bg-gray-800 rounded-lg shadow-lg p-5 cursor-pointer hover:shadow-purple-500/20 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full border border-gray-700">
-    <div>
-        <h3 className="text-xl font-bold text-white mb-2">{bond.title}</h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-3">{bond.description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-            {bond.tags.map(tag => <span key={tag} className="px-3 py-1 bg-gray-700 text-xs text-green-400 rounded-full">{tag}</span>)}
+const BondCard: React.FC<{ bond: Bond, onSelect: (bond: Bond) => void }> = ({ bond, onSelect }) => {
+    const { t } = useLanguage();
+    return (
+      <div onClick={() => onSelect(bond)} className="bg-gray-800 rounded-lg shadow-lg p-5 cursor-pointer hover:shadow-purple-500/20 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full border border-gray-700">
+        <div>
+            <h3 className="text-xl font-bold text-white mb-2">{t(bond.titleKey)}</h3>
+            <p className="text-gray-400 text-sm mb-4 line-clamp-3">{t(bond.descriptionKey)}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+                {bond.tags.map(tag => <span key={tag} className="px-3 py-1 bg-gray-700 text-xs text-green-400 rounded-full">{t(tag.toLowerCase())}</span>)}
+            </div>
         </div>
-    </div>
-    <div className="border-t border-gray-700 pt-3 mt-auto">
-        <p className="text-lg font-semibold text-green-400">${bond.price.toLocaleString()}</p>
-        <p className="text-xs text-gray-500">Expires: {bond.expires}</p>
-    </div>
-  </div>
-);
+        <div className="border-t border-gray-700 pt-3 mt-auto">
+            <p className="text-lg font-semibold text-green-400">${bond.price.toLocaleString()}</p>
+            <p className="text-xs text-gray-500">{t('expires_label')}: {bond.expires}</p>
+        </div>
+      </div>
+    );
+};
 
-const MyContractsList: React.FC<{ contracts: Contract[], onAction: (contractId: string, action: 'finished' | 'failed' | 'disputed') => void }> = ({ contracts, onAction }) => (
+
+const MyContractsList: React.FC<{ contracts: Contract[], onAction: (contractId: string, action: 'finished' | 'failed' | 'disputed') => void }> = ({ contracts, onAction }) => {
+    const { t } = useLanguage();
+    return (
     <div>
-        <h2 className="text-3xl font-bold text-white mb-6">My Active Contracts</h2>
+        <h2 className="text-3xl font-bold text-white mb-6">{t('marketplace_contracts_title')}</h2>
         {contracts.length === 0 ? (
-            <p className="text-gray-400">You have no active contracts. Visit the marketplace to take on a new bond.</p>
+            <p className="text-gray-400">{t('no_active_contracts')}</p>
         ) : (
             <div className="space-y-4">
                 {contracts.map(c => (
                     <div key={c.id} className="bg-gray-800 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h3 className="font-bold text-lg text-white">{c.title}</h3>
-                            <p className="text-sm text-gray-400">Due: {c.executionTime} | Value: ${c.price}</p>
+                            <h3 className="font-bold text-lg text-white">{t(c.titleKey)}</h3>
+                            <p className="text-sm text-gray-400">{t('due_label')}: {c.executionTime} | {t('value_label')}: ${c.price}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                            <button onClick={() => onAction(c.id, 'finished')} className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition">Finished</button>
-                            <button onClick={() => onAction(c.id, 'failed')} className="px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-md hover:bg-red-700 transition">Failed</button>
-                            <button onClick={() => onAction(c.id, 'disputed')} className="px-4 py-2 text-sm font-semibold bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition">Dispute</button>
+                            <button onClick={() => onAction(c.id, 'finished')} className="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition">{t('action_finished')}</button>
+                            <button onClick={() => onAction(c.id, 'failed')} className="px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-md hover:bg-red-700 transition">{t('action_failed')}</button>
+                            <button onClick={() => onAction(c.id, 'disputed')} className="px-4 py-2 text-sm font-semibold bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition">{t('action_dispute')}</button>
                         </div>
                     </div>
                 ))}
             </div>
         )}
     </div>
-);
+    );
+};
 
-const HistoryList: React.FC<{ contracts: Contract[] }> = ({ contracts }) => (
-    <div>
-        <h2 className="text-3xl font-bold text-white mb-6">Contract History</h2>
-        {contracts.length === 0 ? (
-            <p className="text-gray-400">Your contract history is empty.</p>
-        ) : (
-            <div className="space-y-4">
-                {contracts.map(c => (
-                    <div key={c.id} className={`bg-gray-800 rounded-lg p-4 flex justify-between items-center border-l-4 ${c.status === 'finished' ? 'border-green-500' : 'border-red-500'}`}>
-                        <div>
-                            <h3 className="font-bold text-lg text-white">{c.title}</h3>
-                            <p className="text-sm text-gray-400">Completed on: {new Date().toLocaleDateString()}</p>
+const HistoryList: React.FC<{ contracts: Contract[] }> = ({ contracts }) => {
+    const { t } = useLanguage();
+    return (
+        <div>
+            <h2 className="text-3xl font-bold text-white mb-6">{t('marketplace_history_title')}</h2>
+            {contracts.length === 0 ? (
+                <p className="text-gray-400">{t('no_history')}</p>
+            ) : (
+                <div className="space-y-4">
+                    {contracts.map(c => (
+                        <div key={c.id} className={`bg-gray-800 rounded-lg p-4 flex justify-between items-center border-l-4 ${c.status === 'finished' ? 'border-green-500' : 'border-red-500'}`}>
+                            <div>
+                                <h3 className="font-bold text-lg text-white">{t(c.titleKey)}</h3>
+                                <p className="text-sm text-gray-400">{t('completed_on_label')}: {new Date().toLocaleDateString()}</p>
+                            </div>
+                            <span className={`px-3 py-1 text-sm font-medium rounded-full ${c.status === 'finished' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                {t(`status_${c.status}`)}
+                            </span>
                         </div>
-                        <span className={`px-3 py-1 text-sm font-medium rounded-full ${c.status === 'finished' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                            {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
-                        </span>
-                    </div>
-                ))}
-            </div>
-        )}
-    </div>
-);
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default Marketplace;

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useLanguage } from './LanguageContext';
 
 interface PricingPageProps {
   onNavigateToLanding: () => void;
@@ -8,104 +9,109 @@ interface PricingPageProps {
 const CheckIcon = () => <svg className="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>;
 
 const PricingPage: React.FC<PricingPageProps> = ({ onNavigateToLanding }) => {
+    const { t } = useLanguage();
+
+    const plans = {
+        basic: {
+            plan: t('plan_basic'),
+            price: t('price_free'),
+            description: t('plan_basic_desc'),
+            features: [
+                t('feature_daily_updates'),
+                t('feature_basic_news'),
+                t('feature_one_watchlist'),
+                t('feature_weekly_summaries')
+            ],
+            buttonText: t('button_choose_plan')
+        },
+        pro: {
+            plan: t('plan_pro'),
+            price: '$49',
+            period: t('price_period_month'),
+            description: t('plan_pro_desc'),
+            features: [
+                t('feature_pro_1'),
+                t('feature_pro_2'),
+                t('feature_pro_3'),
+                t('feature_pro_4'),
+                t('feature_pro_5'),
+                t('feature_pro_6'),
+                t('feature_pro_7'),
+            ],
+            isPopular: true,
+            buttonText: t('button_choose_plan')
+        },
+        enterprise: {
+            plan: t('plan_enterprise'),
+            price: t('price_custom'),
+            description: t('plan_enterprise_desc'),
+            features: [
+                t('feature_enterprise_1'),
+                t('feature_enterprise_2'),
+                t('feature_enterprise_3'),
+                t('feature_enterprise_4'),
+                t('feature_enterprise_5'),
+                t('feature_enterprise_6'),
+            ],
+            buttonText: t('button_contact_sales')
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-900 text-white">
             <header className="bg-gray-800/80 backdrop-blur-md">
                 <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <h1 onClick={onNavigateToLanding} className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-green-400 text-transparent bg-clip-text cursor-pointer">
-                        Dirsha
+                        {t('app_title')}
                     </h1>
                     <button
                         onClick={onNavigateToLanding}
                         className="text-gray-300 hover:text-white transition"
                     >
-                        Back to Home
+                        {t('button_back_home')}
                     </button>
                 </nav>
             </header>
 
             <main className="container mx-auto px-6 py-16">
                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-extrabold text-white">Find the Plan That's Right for You</h2>
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-white">{t('pricing_title')}</h2>
                     <p className="mt-4 text-lg text-gray-300">
-                        Unlock powerful AI-driven insights with our flexible and transparent pricing plans. Choose a plan to supercharge your agricultural decisions.
+                        {t('pricing_subtitle')}
                     </p>
                 </div>
 
                 <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-                    {/* Basic Plan */}
-                    <PricingCard
-                        plan="Basic"
-                        price="Free"
-                        description="For individuals and small-scale farmers getting started."
-                        features={[
-                            "Daily Market Price Updates",
-                            "Basic Commodity News",
-                            "1 Saved Watchlist",
-                            "Weekly Email Summaries"
-                        ]}
-                    />
-
-                    {/* Pro Plan */}
-                    <PricingCard
-                        plan="Pro"
-                        price="$49"
-                        period="/ month"
-                        description="For active traders, co-ops, and businesses needing an edge."
-                        features={[
-                            "Everything in Basic, plus:",
-                            "Real-time Price Alerts",
-                            "Full AI Price Forecasts (3-month)",
-                            "Regional Price Analysis",
-                            "Market Trigger Monitoring",
-                            "Unlimited Watchlists",
-                            "Priority Email Support"
-                        ]}
-                        isPopular={true}
-                    />
-
-                    {/* Enterprise Plan */}
-                    <PricingCard
-                        plan="Enterprise"
-                        price="Custom"
-                        description="For large organizations, exporters, and government agencies."
-                        features={[
-                            "Everything in Pro, plus:",
-                            "Extended AI Forecasts (12+ months)",
-                            "Direct API Access",
-                            "Customizable Data Dashboards",
-                            "Dedicated Account Manager",
-                            "On-demand Data Reports"
-                        ]}
-                        buttonText="Contact Sales"
-                    />
+                    <PricingCard {...plans.basic} />
+                    <PricingCard {...plans.pro} />
+                    <PricingCard {...plans.enterprise} />
                 </div>
 
                 <section id="faq" className="my-20 max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold text-center text-white mb-8">Frequently Asked Questions</h2>
+                    <h2 className="text-3xl font-bold text-center text-white mb-8">{t('faq_title')}</h2>
                     <div className="space-y-4">
                         <FAQItem
-                            question="Can I change my plan later?"
-                            answer="Yes, you can upgrade, downgrade, or cancel your plan at any time from your account settings. Changes will be prorated for the current billing cycle."
+                            question={t('faq1_q')}
+                            answer={t('faq1_a')}
                         />
                         <FAQItem
-                            question="What payment methods do you accept?"
-                            answer="We accept all major credit cards (Visa, Mastercard, American Express) and mobile money payments for your convenience."
+                            question={t('faq2_q')}
+                            answer={t('faq2_a')}
                         />
                         <FAQItem
-                            question="Is there a free trial for the Pro plan?"
-                            answer="We currently do not offer a free trial, but our Basic plan is free forever and provides a great introduction to our platform's capabilities."
+                            question={t('faq3_q')}
+                            answer={t('faq3_a')}
                         />
                          <FAQItem
-                            question="What kind of support is included?"
-                            answer="All plans include email support. The Pro plan offers priority email support, and the Enterprise plan includes a dedicated account manager for personalized assistance."
+                            question={t('faq4_q')}
+                            answer={t('faq4_a')}
                         />
                     </div>
                 </section>
             </main>
             
             <footer className="text-center p-6 bg-gray-800 text-gray-400 text-sm">
-                <p>&copy; 2025 Dirsha. All Rights Reserved.</p>
+                <p>{t('footer_text')}</p>
             </footer>
         </div>
     );
@@ -121,11 +127,13 @@ interface PricingCardProps {
     buttonText?: string;
 }
 
-const PricingCard: React.FC<PricingCardProps> = ({ plan, price, period, description, features, isPopular = false, buttonText = "Choose Plan" }) => (
+const PricingCard: React.FC<PricingCardProps> = ({ plan, price, period, description, features, isPopular = false, buttonText = "Choose Plan" }) => {
+    const { t } = useLanguage();
+    return (
     <div className={`relative bg-gray-800 rounded-xl shadow-lg p-8 border ${isPopular ? 'border-purple-500' : 'border-gray-700'} flex flex-col`}>
         {isPopular && (
             <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 text-sm font-semibold text-white bg-purple-500 rounded-full">MOST POPULAR</span>
+                <span className="px-4 py-1 text-sm font-semibold text-white bg-purple-500 rounded-full">{t('most_popular')}</span>
             </div>
         )}
         <h3 className="text-2xl font-bold text-white text-center">{plan}</h3>
@@ -148,7 +156,7 @@ const PricingCard: React.FC<PricingCardProps> = ({ plan, price, period, descript
             {buttonText}
         </button>
     </div>
-);
+)};
 
 interface FAQItemProps {
     question: string;

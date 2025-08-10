@@ -3,9 +3,9 @@ import type { Bond, Contract, CommodityPrediction } from './types';
 export const DUMMY_BONDS: Bond[] = [
   {
     id: 'bond-1',
-    title: '1000kg of Organic Hass Avocados',
-    description: 'Seeking a certified organic farmer to supply 1000kg of premium Hass avocados for export. Must meet Grade A quality standards.',
-    requirements: 'Organic certification required. Must be able to deliver to Nairobi logistics hub. Packaging must be export-grade.',
+    titleKey: 'bond_1_title',
+    descriptionKey: 'bond_1_desc',
+    requirementsKey: 'bond_1_reqs',
     price: 1500,
     itemPrice: 1.5,
     tags: ['Avocado', 'Organic', 'Export', 'Fruit'],
@@ -15,9 +15,9 @@ export const DUMMY_BONDS: Bond[] = [
   },
   {
     id: 'bond-2',
-    title: '5 Tonnes of Maize for Milling',
-    description: 'We need 5 tonnes of high-quality maize for our local milling operations. Moisture content must be below 13%.',
-    requirements: 'Delivery to Eldoret. Sample must be provided for quality testing before contract finalization.',
+    titleKey: 'bond_2_title',
+    descriptionKey: 'bond_2_desc',
+    requirementsKey: 'bond_2_reqs',
     price: 2000,
     itemPrice: 400,
     tags: ['Maize', 'Cereal', 'Local', 'Milling'],
@@ -27,9 +27,9 @@ export const DUMMY_BONDS: Bond[] = [
   },
   {
     id: 'bond-3',
-    title: '200 Liters of Fresh Goat Milk Weekly',
-    description: 'Weekly supply of 200 liters of fresh, pasteurized goat milk for cheese production. Continuous contract for 6 months.',
-    requirements: 'Consistent weekly delivery every Monday. Health certifications for the herd are mandatory.',
+    titleKey: 'bond_3_title',
+    descriptionKey: 'bond_3_desc',
+    requirementsKey: 'bond_3_reqs',
     price: 500,
     itemPrice: 1.2,
     tags: ['Dairy', 'Goat Milk', 'Weekly', 'Cheese'],
@@ -43,7 +43,7 @@ export const DUMMY_CONTRACTS: Contract[] = [];
 
 export const COMMODITY_PREDICTIONS: CommodityPrediction[] = [
     {
-        name: "Coffee",
+        nameKey: "commodity_coffee",
         currentPrice: 180.50,
         change: 1.2,
         unit: "USD/lb",
@@ -56,11 +56,11 @@ export const COMMODITY_PREDICTIONS: CommodityPrediction[] = [
             { region: "Sidama", price: 182.2, coords: { x: '42%', y: '74%' } },
             { region: "Harar", price: 181.0, coords: { x: '63%', y: '48%' } },
         ],
-        forecastDetails: "Forecast based on strong international demand, favorable weather conditions in key growing regions (Jimma, Sidama), and stable government export policies. A slight increase is expected as the harvest season concludes and supplies tighten before the next cycle.",
+        forecastDetailsKey: "forecast_details_coffee",
         volume: 7500000,
     },
     {
-        name: "Teff",
+        nameKey: "commodity_teff",
         currentPrice: 4800,
         change: -2.5,
         unit: "ETB/quintal",
@@ -73,11 +73,11 @@ export const COMMODITY_PREDICTIONS: CommodityPrediction[] = [
             { region: "Mekelle", price: 4900, coords: { x: '51%', y: '20%' } },
             { region: "Adama", price: 4800, coords: { x: '50%', y: '55%' } },
         ],
-        forecastDetails: "The current price drop is attributed to the peak harvest season flooding the market. Our AI predicts prices will stabilize and slightly decrease further in the short term before rising again as the demand for the upcoming holiday season picks up.",
+        forecastDetailsKey: "forecast_details_teff",
         volume: 250000,
     },
     {
-        name: "Wheat",
+        nameKey: "commodity_wheat",
         currentPrice: 3200,
         change: 3.1,
         unit: "ETB/quintal",
@@ -89,11 +89,11 @@ export const COMMODITY_PREDICTIONS: CommodityPrediction[] = [
             { region: "Bale", price: 3150, coords: { x: '55%', y: '68%' } },
             { region: "Arsi", price: 3180, coords: { x: '51%', y: '60%' } },
         ],
-        forecastDetails: "Increased prices are driven by higher transport costs and a dependency on international imports. The forecast indicates continued upward pressure, though this may be slightly offset by government subsidies and upcoming local harvests in the Arsi-Bale zones.",
+        forecastDetailsKey: "forecast_details_wheat",
         volume: 400000,
     },
      {
-        name: "Onion",
+        nameKey: "commodity_onion",
         currentPrice: 25,
         change: 8.0,
         unit: "ETB/kg",
@@ -105,29 +105,29 @@ export const COMMODITY_PREDICTIONS: CommodityPrediction[] = [
             { region: "Dire Dawa", price: 28, coords: { x: '65%', y: '43%' } },
             { region: "Bahir Dar", price: 24, coords: { x: '37%', y: '36%' } },
         ],
-        forecastDetails: "A significant price spike is anticipated due to seasonal shortages and irrigation issues in primary cultivation areas. Demand remains consistently high, putting further upward pressure on prices. The forecast suggests this trend will continue until the next major harvest.",
+        forecastDetailsKey: "forecast_details_onion",
         volume: 120000,
     }
 ];
 
 export const TRIGGERS = {
     economic: [
-        { name: "Inflation Rate", value: "15.2%", impact: "high" },
-        { name: "ETB/USD Exchange Rate", value: "54.3", impact: "medium" },
-        { name: "Transport Cost Index", value: "+8%", impact: "high" },
+        { nameKey: "trigger_inflation", value: "15.2%", impact: "high" },
+        { nameKey: "trigger_exchange_rate", value: "54.3", impact: "medium" },
+        { nameKey: "trigger_transport_cost", value: "+8%", impact: "high" },
     ],
     weather: [
-        { name: "Rainfall Anomaly", value: "-12%", impact: "high" },
-        { name: "Regional Drought", value: "Active in 3 regions", impact: "medium" },
+        { nameKey: "trigger_rainfall", value: "-12%", impact: "high" },
+        { nameKey: "trigger_drought", value: "Active in 3 regions", impact: "medium" },
     ],
     seasonal: [
-        { name: "Harvest Season", value: "Peak for Wheat", impact: "low" },
-        { name: "Fasting Period (Filseta)", value: "Upcoming", impact: "medium" },
+        { nameKey: "trigger_harvest", value: "Peak for Wheat", impact: "low" },
+        { nameKey: "trigger_fasting", value: "Upcoming", impact: "medium" },
     ]
 };
 
 export const AI_RECOMMENDATIONS = [
-    { title: "Buy Onions Now", text: "Prices predicted to rise 25% in 2 weeks due to harvest delays in key regions. Secure your supply before the spike." },
-    { title: "Hold on Coffee", text: "Market is stabilizing. Forecasts suggest a slight dip next month before the next rally. Wait for a better entry point." },
-    { title: "Sell Wheat Stock", text: "Current prices are at a 6-month high. Our AI predicts a slight correction as new harvests enter the market." },
+    { titleKey: "rec_1_title", textKey: "rec_1_text" },
+    { titleKey: "rec_2_title", textKey: "rec_2_text" },
+    { titleKey: "rec_3_title", textKey: "rec_3_text" },
 ];

@@ -7,6 +7,7 @@ import ContactUsPage from './components/ContactUsPage';
 import PricingPage from './components/PricingPage';
 import type { Bond, Contract } from './types';
 import { DUMMY_BONDS, DUMMY_CONTRACTS } from './constants';
+import { useLanguage } from './components/LanguageContext';
 
 type View = 'landing' | 'marketplace' | 'predictions' | 'contact' | 'pricing';
 
@@ -15,6 +16,8 @@ const App: React.FC = () => {
   const [bonds, setBonds] = useState<Bond[]>(DUMMY_BONDS);
   const [myContracts, setMyContracts] = useState<Contract[]>(DUMMY_CONTRACTS);
   const [history, setHistory] = useState<Contract[]>([]);
+  const { t } = useLanguage();
+
 
   const navigateToMarketplace = () => setView('marketplace');
   const navigateToLanding = () => setView('landing');
@@ -22,9 +25,18 @@ const App: React.FC = () => {
   const navigateToContact = () => setView('contact');
   const navigateToPricing = () => setView('pricing');
 
-  const handleCreateBond = (newBondData: Omit<Bond, 'id' | 'creator'>) => {
+  const handleCreateBond = (newBondData: Omit<Bond, 'id' | 'creator' | 'titleKey' | 'descriptionKey' | 'requirementsKey'> & { title:string, description:string, requirements:string }) => {
+    // This is a simplified approach. In a real app, you'd save keys and translated content.
+    // For this dummy app, we'll just add it with raw text.
     const newBond: Bond = {
-      ...newBondData,
+      titleKey: newBondData.title,
+      descriptionKey: newBondData.description,
+      requirementsKey: newBondData.requirements,
+      price: newBondData.price,
+      itemPrice: newBondData.itemPrice,
+      tags: newBondData.tags,
+      executionTime: newBondData.executionTime,
+      expires: newBondData.expires,
       id: `bond-${Date.now()}`,
       creator: 'My Company', // Placeholder for logged-in user
     };

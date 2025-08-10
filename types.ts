@@ -1,9 +1,9 @@
 
 export interface Bond {
   id: string;
-  title: string;
-  description: string;
-  requirements: string;
+  titleKey: string;
+  descriptionKey: string;
+  requirementsKey: string;
   price: number;
   itemPrice: number;
   tags: string[];
@@ -34,7 +34,7 @@ export interface DataPoint {
 }
 
 export interface CommodityPrediction {
-  name: string;
+  nameKey: string;
   currentPrice: number;
   change: number;
   unit: string;
@@ -42,6 +42,6 @@ export interface CommodityPrediction {
   historical: DataPoint[];
   forecast: DataPoint[];
   regionalPrices: RegionalPrice[];
-  forecastDetails: string;
+  forecastDetailsKey: string;
   volume: number;
 }

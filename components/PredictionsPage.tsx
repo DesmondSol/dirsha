@@ -1,9 +1,11 @@
+
 import React, { useState, useMemo } from 'react';
 import { COMMODITY_PREDICTIONS, TRIGGERS, AI_RECOMMENDATIONS } from '../constants';
 import type { CommodityPrediction } from '../types';
 import ForecastDetailsModal from './ForecastDetailsModal';
 import ChartComponent from './ChartComponent';
 import type { ChartConfiguration } from 'chart.js/auto';
+import { useLanguage } from './LanguageContext';
 
 
 // --- ICONS ---
@@ -22,8 +24,8 @@ const AiIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="
 // --- TYPE DEFINITIONS ---
 interface RegionalCommodityInfo extends CommodityPrediction {
   recommendation: {
-    title: string;
-    text: string;
+    titleKey: string;
+    textKey: string;
   };
 }
 
@@ -35,13 +37,15 @@ interface DashboardViewProps {
 }
 
 // --- SUB-COMPONENTS ---
-const Header = ({ onNavToggle, onNavigateToLanding }) => (
+const Header = ({ onNavToggle, onNavigateToLanding }) => {
+    const { t } = useLanguage();
+    return (
     <div className="sticky top-0 z-20 flex items-center justify-between p-4 bg-gray-900/80 backdrop-blur-sm">
         <div className="flex items-center gap-4">
              <button onClick={onNavigateToLanding} className="text-2xl font-bold bg-gradient-to-r from-green-400 to-purple-500 text-transparent bg-clip-text">Dirsha AI</button>
             <div className='hidden md:block'>
-                <p className="text-xs text-gray-400">Ethiopian Market AI – Price Forecasting</p>
-                <p className="text-xs text-gray-500">Last updated: {new Date().toLocaleTimeString()} | Sources: ECX, NBE</p>
+                <p className="text-xs text-gray-400">{t('predictions_subtitle')}</p>
+                <p className="text-xs text-gray-500">{t('last_updated')}: {new Date().toLocaleTimeString()} | {t('sources_label')}: ECX, NBE</p>
             </div>
         </div>
         <div className="flex items-center gap-2">
@@ -51,23 +55,24 @@ const Header = ({ onNavToggle, onNavigateToLanding }) => (
             <button onClick={onNavToggle} className="p-2 rounded-full hover:bg-gray-700 transition lg:hidden"><MenuIcon /></button>
         </div>
     </div>
-);
+)};
 
 const Sidebar = ({ isOpen, onClose, activeItem, onItemClick }) => {
+    const { t } = useLanguage();
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon/> },
-        { id: 'commodity', label: 'Commodity View', icon: <CommodityIcon/> },
-        { id: 'regional', label: 'Regional Market', icon: <MapIcon/> },
-        { id: 'triggers', label: 'Trigger Analysis', icon: <TriggersIcon/> },
-        { id: 'recommendations', label: 'AI Recommendations', icon: <AiIcon/> },
-        { id: 'settings', label: 'Forecast Settings', icon: <SettingsIcon/> },
+        { id: 'dashboard', label: t('sidebar_dashboard'), icon: <DashboardIcon/> },
+        { id: 'commodity', label: t('sidebar_commodity'), icon: <CommodityIcon/> },
+        { id: 'regional', label: t('sidebar_regional'), icon: <MapIcon/> },
+        { id: 'triggers', label: t('sidebar_triggers'), icon: <TriggersIcon/> },
+        { id: 'recommendations', label: t('sidebar_recommendations'), icon: <AiIcon/> },
+        { id: 'settings', label: t('sidebar_settings'), icon: <SettingsIcon/> },
     ];
     return (
         <>
             <div className={`fixed inset-0 bg-black/60 z-30 lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={onClose}></div>
             <aside className={`fixed top-0 z-40 h-full bg-black/95 backdrop-blur-lg w-64 transition-transform duration-300 ease-in-out ${isOpen ? 'right-0' : '-right-full'} lg:relative lg:right-0 lg:translate-x-0 lg:w-60 flex flex-col border-r border-gray-800`}>
                 <div className="p-4 flex justify-between items-center lg:justify-center border-b border-gray-800">
-                    <h2 className="font-bold text-xl text-white">Prediction</h2>
+                    <h2 className="font-bold text-xl text-white">{t('sidebar_title')}</h2>
                     <button onClick={onClose} className="lg:hidden p-1 text-gray-400"><CloseIcon/></button>
                 </div>
                 <nav className="flex-1 p-3 space-y-2">
@@ -84,52 +89,57 @@ const Sidebar = ({ isOpen, onClose, activeItem, onItemClick }) => {
 };
 
 const CommodityHighlightCard = ({ commodity, onSelect, onViewForecast, isSelected }) => {
+    const { t } = useLanguage();
     const isPositive = commodity.change >= 0;
     return (
         <div onClick={() => onSelect(commodity)} className={`bg-gray-800/50 rounded-lg p-4 border flex flex-col justify-between h-full flex-shrink-0 w-full snap-start transition-all cursor-pointer hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-900/20 ${isSelected ? 'border-purple-500' : 'border-gray-700/50'}`}>
             <div>
                 <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-xl bg-gradient-to-r from-green-300 to-purple-300 text-transparent bg-clip-text">{commodity.name}</h3>
+                    <h3 className="font-bold text-xl bg-gradient-to-r from-green-300 to-purple-300 text-transparent bg-clip-text">{t(commodity.nameKey)}</h3>
                     <span className={`text-lg font-bold ${isPositive ? 'text-green-400' : 'text-purple-400'}`}>
                         {isPositive ? '▲' : '▼'} {Math.abs(commodity.change)}%
                     </span>
                 </div>
-                <p className="text-2xl font-light text-white my-2">{commodity.currentPrice.toLocaleString()} <span className="text-sm text-gray-400">{commodity.unit}</span></p>
+                <p className="text-2xl font-light text-white my-2">{commodity.currentPrice.toLocaleString()} <span className="text-sm text-gray-400">{t(commodity.unit)}</span></p>
                 <div className='h-12 bg-black/20 rounded-md my-2'></div>
             </div>
             <div className="flex gap-2 mt-2">
-                <button onClick={(e) => { e.stopPropagation(); onViewForecast(commodity); }} className="w-full text-xs bg-gray-700 py-1.5 rounded hover:bg-gray-600 transition">View Forecast</button>
-                <button className="w-full text-xs bg-purple-600/50 py-1.5 rounded hover:bg-purple-600/80 transition">Set Alert</button>
+                <button onClick={(e) => { e.stopPropagation(); onViewForecast(commodity); }} className="w-full text-xs bg-gray-700 py-1.5 rounded hover:bg-gray-600 transition">{t('view_forecast_button')}</button>
+                <button className="w-full text-xs bg-purple-600/50 py-1.5 rounded hover:bg-purple-600/80 transition">{t('set_alert_button')}</button>
             </div>
         </div>
     )
 };
 
-const ComingSoonView = ({ feature }) => (
+const ComingSoonView = ({ feature }) => {
+    const { t } = useLanguage();
+    return (
     <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-gray-800/50 rounded-lg border border-gray-700/50 min-h-[50vh]">
         <div className="text-6xl mb-4">🚧</div>
-        <h3 className="text-3xl font-bold text-white mb-2">Coming Soon!</h3>
-        <p className="text-lg text-gray-300">The "{feature.charAt(0).toUpperCase() + feature.slice(1)}" feature is under construction.</p>
-        <p className="text-gray-400 mt-1">We are working hard to bring you these advanced insights. Stay tuned!</p>
+        <h3 className="text-3xl font-bold text-white mb-2">{t('coming_soon_title')}</h3>
+        <p className="text-lg text-gray-300">{t('coming_soon_feature_intro')} "{feature}" {t('coming_soon_feature_outro')}</p>
+        <p className="text-gray-400 mt-1">{t('coming_soon_subtitle')}</p>
     </div>
-);
+)};
 
-const DashboardView: React.FC<DashboardViewProps> = ({ commodities, aiRecommendations, triggers, onViewForecast }) => (
+const DashboardView: React.FC<DashboardViewProps> = ({ commodities, aiRecommendations, triggers, onViewForecast }) => {
+    const { t } = useLanguage();
+    return (
     <div className="space-y-8">
         <div>
-            <h2 className="text-3xl font-bold text-white">Market Dashboard</h2>
-            <p className="text-gray-400 mt-1">A high-level overview of the Ethiopian agricultural market.</p>
+            <h2 className="text-3xl font-bold text-white">{t('dashboard_title')}</h2>
+            <p className="text-gray-400 mt-1">{t('dashboard_subtitle')}</p>
         </div>
 
         <section>
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                <AiIcon /> AI-Powered Recommendations
+                <AiIcon /> {t('dashboard_recs_title')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {aiRecommendations.map((rec, index) => (
                     <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-700/50 hover:border-green-500/50 transition-colors">
-                        <h4 className="font-bold text-green-400">{rec.title}</h4>
-                        <p className="text-sm text-gray-300 mt-2">{rec.text}</p>
+                        <h4 className="font-bold text-green-400">{t(rec.titleKey)}</h4>
+                        <p className="text-sm text-gray-300 mt-2">{t(rec.textKey)}</p>
                     </div>
                 ))}
             </div>
@@ -137,17 +147,17 @@ const DashboardView: React.FC<DashboardViewProps> = ({ commodities, aiRecommenda
 
         <section>
              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                <TriggersIcon /> Key Market Triggers
+                <TriggersIcon /> {t('dashboard_triggers_title')}
             </h3>
             <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700/50">
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {Object.entries(triggers).map(([category, triggerList]) => (
                         <div key={category}>
-                            <h4 className="font-bold capitalize text-purple-400 mb-3 border-b border-gray-700 pb-2">{category}</h4>
+                            <h4 className="font-bold capitalize text-purple-400 mb-3 border-b border-gray-700 pb-2">{t(category)}</h4>
                             <ul className="space-y-2">
-                                {triggerList.map(trigger => (
-                                    <li key={trigger.name} className="flex justify-between text-sm">
-                                        <span className="text-gray-300">{trigger.name}</span>
+                                {(triggerList as any[]).map(trigger => (
+                                    <li key={trigger.nameKey} className="flex justify-between text-sm">
+                                        <span className="text-gray-300">{t(trigger.nameKey)}</span>
                                         <span className={`font-mono font-semibold ${trigger.impact === 'high' ? 'text-red-400' : trigger.impact === 'medium' ? 'text-yellow-400' : 'text-gray-200'}`}>{trigger.value}</span>
                                     </li>
                                 ))}
@@ -160,12 +170,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({ commodities, aiRecommenda
 
         <section>
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                <CommodityIcon /> Top Movers
+                <CommodityIcon /> {t('dashboard_movers_title')}
             </h3>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {commodities.slice(0, 4).map(commodity => (
                     <CommodityHighlightCard 
-                        key={commodity.name} 
+                        key={commodity.nameKey} 
                         commodity={commodity} 
                         onSelect={onViewForecast}
                         onViewForecast={onViewForecast}
@@ -175,19 +185,20 @@ const DashboardView: React.FC<DashboardViewProps> = ({ commodities, aiRecommenda
             </div>
         </section>
     </div>
-);
+)};
 
 
 const CommodityView = ({ commodities, onViewForecast }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const filteredCommodities = commodities.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const { t } = useLanguage();
+    const filteredCommodities = commodities.filter(c => t(c.nameKey).toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <div className="space-y-6">
             <div className="relative">
                 <input
                     type="text"
-                    placeholder="Search for a commodity..."
+                    placeholder={t('search_commodity_placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full bg-gray-800 border-2 border-gray-700 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -200,7 +211,7 @@ const CommodityView = ({ commodities, onViewForecast }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredCommodities.map(commodity => (
                      <CommodityHighlightCard
-                        key={commodity.name}
+                        key={commodity.nameKey}
                         commodity={commodity}
                         onSelect={onViewForecast}
                         onViewForecast={onViewForecast}
@@ -224,11 +235,12 @@ const regionalData = COMMODITY_PREDICTIONS.reduce((acc: Record<string, RegionalC
 }, {} as Record<string, RegionalCommodityInfo[]>);
 
 const RegionalMarketView = () => {
+    const { t } = useLanguage();
     const [expandedRegion, setExpandedRegion] = useState(Object.keys(regionalData)[0]);
 
     return (
         <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-white">Regional Markets</h2>
+            <h2 className="text-3xl font-bold text-white">{t('regional_market_title')}</h2>
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="lg:w-1/4">
                     <ul className="space-y-2">
@@ -238,25 +250,25 @@ const RegionalMarketView = () => {
                                     onClick={() => setExpandedRegion(region)}
                                     className={`w-full text-left px-4 py-2 rounded-md transition ${expandedRegion === region ? 'bg-purple-600 text-white' : 'bg-gray-800 hover:bg-gray-700'}`}
                                 >
-                                    {region}
+                                    {t(region.toLowerCase().replace(' ','_'))}
                                 </button>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div className="lg:w-3/4 bg-gray-800/50 p-4 rounded-lg border border-gray-700/50 min-h-[50vh]">
-                    <h3 className="text-xl font-bold mb-4 text-white">{expandedRegion} Market</h3>
+                    <h3 className="text-xl font-bold mb-4 text-white">{t(expandedRegion.toLowerCase().replace(' ','_'))} {t('regional_market_header_suffix')}</h3>
                     {regionalData[expandedRegion] ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {regionalData[expandedRegion].map((item, index) => (
-                                <div key={`${item.name}-${index}`} className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                    <h4 className="font-bold text-lg text-green-400">{item.name}</h4>
-                                    <p className="text-sm text-gray-300 mt-2">"{item.recommendation.text}"</p>
+                                <div key={`${item.nameKey}-${index}`} className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                    <h4 className="font-bold text-lg text-green-400">{t(item.nameKey)}</h4>
+                                    <p className="text-sm text-gray-300 mt-2">"{t(item.recommendation.textKey)}"</p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-400">No data for this region.</p>
+                        <p className="text-gray-400">{t('no_data_for_region')}</p>
                     )}
                 </div>
             </div>
@@ -265,38 +277,39 @@ const RegionalMarketView = () => {
 };
 
 const TRIGGER_HISTORY = {
-    "Inflation Rate": {
+    trigger_inflation: {
         data: [{x: 'Jan', y: 15.1}, {x: 'Feb', y: 15.2}, {x: 'Mar', y: 15.0}, {x: 'Apr', y: 15.3}, {x: 'May', y: 15.25}, {x: 'Jun', y: 15.2}],
         unit: '%'
     },
-    "ETB/USD Exchange Rate": {
+    trigger_exchange_rate: {
         data: [{x: 'Jan', y: 53.8}, {x: 'Feb', y: 54.0}, {x: 'Mar', y: 54.1}, {x: 'Apr', y: 54.2}, {x: 'May', y: 54.25}, {x: 'Jun', y: 54.3}],
         unit: ''
     },
-    "Transport Cost Index": {
+    trigger_transport_cost: {
         data: [{x: 'Jan', y: 100}, {x: 'Feb', y: 102}, {x: 'Mar', y: 103}, {x: 'Apr', y: 105}, {x: 'May', y: 107}, {x: 'Jun', y: 108}],
         unit: ' (Base 100)'
     },
-    "Rainfall Anomaly": {
+    trigger_rainfall: {
         data: [{x: 'Jan', y: 2}, {x: 'Feb', y: -5}, {x: 'Mar', y: 10}, {x: 'Apr', y: -8}, {x: 'May', y: -15}, {x: 'Jun', y: -12}],
         unit: '%'
     }
 };
 
 const TriggerAnalysisView = () => {
+    const { t } = useLanguage();
     const allTriggers = [...TRIGGERS.economic, ...TRIGGERS.weather];
     const [selectedTrigger, setSelectedTrigger] = useState(allTriggers[0]);
 
     const chartConfig: ChartConfiguration | null = useMemo(() => {
-        const history = TRIGGER_HISTORY[selectedTrigger.name];
+        const history = TRIGGER_HISTORY[selectedTrigger.nameKey];
         if (!history) return null;
 
         return {
             type: 'line',
             data: {
-                labels: history.data.map(d => d.x),
+                labels: history.data.map(d => t(`month_${d.x.toLowerCase()}`)),
                 datasets: [{
-                    label: `${selectedTrigger.name} value`,
+                    label: `${t(selectedTrigger.nameKey)} ${t('value_label')}`,
                     data: history.data.map(d => d.y),
                     borderColor: '#a855f7',
                     backgroundColor: 'rgba(168, 85, 247, 0.2)',
@@ -311,7 +324,7 @@ const TriggerAnalysisView = () => {
                     y: {
                         grid: { color: 'rgba(255, 255, 255, 0.1)'},
                         ticks: { color: '#e5e7eb' },
-                        title: { display: true, text: `Value ${history.unit}`, color: '#e5e7eb' }
+                        title: { display: true, text: `${t('value_label')} ${history.unit}`, color: '#e5e7eb' }
                     },
                     x: {
                         grid: { color: 'rgba(255, 255, 255, 0.1)'},
@@ -326,22 +339,22 @@ const TriggerAnalysisView = () => {
                 }
             }
         };
-    }, [selectedTrigger]);
+    }, [selectedTrigger, t]);
 
     return (
         <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-white">Trigger Analysis</h2>
+            <h2 className="text-3xl font-bold text-white">{t('trigger_analysis_title')}</h2>
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="lg:w-1/3">
                     <ul className="space-y-2">
                         {allTriggers.map(trigger => (
-                            <li key={trigger.name}>
+                            <li key={trigger.nameKey}>
                                 <button
                                     onClick={() => setSelectedTrigger(trigger)}
-                                    className={`w-full text-left px-4 py-2 rounded-md transition ${selectedTrigger.name === trigger.name ? 'bg-green-600 text-white' : 'bg-gray-800 hover:bg-gray-700'}`}
+                                    className={`w-full text-left px-4 py-2 rounded-md transition ${selectedTrigger.nameKey === trigger.nameKey ? 'bg-green-600 text-white' : 'bg-gray-800 hover:bg-gray-700'}`}
                                 >
                                     <div className="flex justify-between items-center">
-                                        <span>{trigger.name}</span>
+                                        <span>{t(trigger.nameKey)}</span>
                                         <span className="text-sm font-mono">{trigger.value}</span>
                                     </div>
                                 </button>
@@ -354,7 +367,7 @@ const TriggerAnalysisView = () => {
                         <ChartComponent config={chartConfig} />
                     ) : (
                         <div className="flex items-center justify-center h-full">
-                            <p className="text-gray-400">No historical data available for this trigger.</p>
+                            <p className="text-gray-400">{t('no_historical_data')}</p>
                         </div>
                     )}
                 </div>
